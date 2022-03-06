@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-redis-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration-redis
+  template:
+    metadata:
+      labels:
+        app: expiration-redis
+    spec:
+      containers:
+        - name: expiration-redis
+        # 아래 image이름은 반드시 redis 되어야 한다. 그래야 redis회사에서
+        # 공식적으로 제공한 image를 사용할 수있다.
+          image: redis
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expiration-redis-srv
+spec:
+  selector:
+    app: expiration-redis
+  ports:
+    - name: expiration-redis-database
+      protocol: TCP
+      port: 6379
+      targetPort: 6379

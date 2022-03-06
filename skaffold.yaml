@@ -1,0 +1,64 @@
+apiVersion: skaffold/v2beta26
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*.yaml
+build:
+  # googleCloudBuild와 local 둘중에 하나 선택 가능. 둘다 동시에 선택 불가.
+  local:
+    push: false
+  # googleCloudBuild:
+  #   projectId: ticketing-dev-335808
+  artifacts:
+    - image: gcr.io/ticketing-dev-000000/auth
+      context: auth 
+      # context는 해당 image가 있는 폴더를 지칭한다
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" 
+          # src다음의 **는 모든 폴더를 지칭한다.
+          # 해석해보면 src폴더내의 모든 하위폴더안에서 확장자가 ts인 모든 파일이라는 뜻이다.
+            dest: .
+    - image: gcr.io/ticketing-dev-000000/client
+      context: client 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js" 
+            dest: .   
+    - image: gcr.io/ticketing-dev-000000/tickets
+      context: tickets 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" 
+            dest: .
+    - image: gcr.io/ticketing-dev-000000/orders
+      context: orders 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" 
+            dest: .
+    - image: gcr.io/ticketing-dev-000000/expiration
+      context: expiration 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" 
+            dest: .
+    - image: gcr.io/ticketing-dev-000000/payments
+      context: payments 
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts" 
+            dest: .

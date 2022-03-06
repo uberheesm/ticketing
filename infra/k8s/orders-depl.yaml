@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders
+  template:
+    metadata:
+      labels:
+        app: orders
+    spec:
+      containers:
+        - name: orders
+          image: gcr.io/ticketing-dev-000000/orders
+          env:
+            # 아래 fieldPath에서 metadata.name를 사용하였다. 이렇게 하면 orders-depl
+            # 의 pod name을 value로 설정하게 된다. 예를 들어서 지금 글을 적는 현재
+            # console.log(process.env.NATS_CLIENT_ID)로 value를 확인해보면 
+            # orders-depl-8684945664-8l72x 라고 나온다. (아래 stackoverflow 참조)
+            # https://stackoverflow.com/questions/52680807/how-to-assign-cluster-namespace-and-pod-name-in-kubernetes-yaml-files-environm 
+            # https://stackoverflow.com/questions/49582349/kubernetes-how-to-refer-to-one-environment-variable-from-another
+            # 추가로 fieldPath에 metadata.namespace나 status.podIP을 넣으면 각각의
+            # namespace와 podIP가 값으로 설정된다. 단, 반드시 valueFrom - fieldRef
+            # fieldPath의 순서를 지켜야 한다.
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: http://nats-srv:4222
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: MONGO_URI
+            # 아래 value에서 mongodb://다음에 오는 주소는 service의 metadata에 있는
+            # name의 값이 들어와야 한다. 그리고 port주소 27017다음에 오는것은 임의로
+            # 만들어준 database의 이름이다
+            # 이름을 대문자로 만들어 준 것은 중요하거나 비밀스럽거나 하드코딩한 정보는
+            # 대문자로 하는 것이 코딩 컨벤션이다. 아래 jwt는 실수로 소문자로 만들었는데
+            # 추후 만들때는 이런 confidential한 정보는 무조건 대문자로 만들어서 보자마자
+            # 어떤 정보인지 알 수 있도록 한다.
+              value: mongodb://orders-mongo-srv:27017/orders
+            - name: jwt
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-srv
+spec:
+  selector:
+    app: orders
+  ports:
+    - name: orders
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-mongo
+  template:
+    metadata:
+      labels:
+        app: payments-mongo
+    spec:
+      containers:
+        - name: payments-mongo
+        # 아래 image이름은 반드시 mongo가 되어야 한다. 그래야 mongodb회사에서
+        # 공식적으로 제공한 image를 사용할 수있다.
+          image: mongo
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-mongo-srv
+spec:
+  selector:
+    app: payments-mongo
+  ports:
+    - name: payments-database
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

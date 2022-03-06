@@ -1,0 +1,13 @@
+FROM node:alpine
+
+WORKDIR /app
+COPY package.json .
+RUN npm install --only=prod
+COPY . .
+
+CMD ["npm", "start"]
+
+# 위에 RUN npm install --only=prod 의 경우 test용으로 install한
+# 모듈이 있는데 그것들을 docker 이미지에 다운로드 및 인스톨 하지 않
+# 겠다는 의미이다. 그래서 test 관련 모듈의 경우 npm install --save-dev
+# 커맨드를 사용하여 분리시켜 인스톨하여야 한다.

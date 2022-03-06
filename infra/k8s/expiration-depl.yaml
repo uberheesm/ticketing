@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration
+  template:
+    metadata:
+      labels:
+        app: expiration
+    spec:
+      containers:
+        - name: expiration
+          image: gcr.io/ticketing-dev-000000/expiration
+          env:
+            # 아래 fieldPath에서 metadata.name를 사용하였다. 이렇게 하면 orders-depl
+            # 의 pod name을 value로 설정하게 된다. 예를 들어서 지금 글을 적는 현재
+            # console.log(process.env.NATS_CLIENT_ID)로 value를 확인해보면 
+            # orders-depl-8684945664-8l72x 라고 나온다. (아래 stackoverflow 참조)
+            # https://stackoverflow.com/questions/52680807/how-to-assign-cluster-namespace-and-pod-name-in-kubernetes-yaml-files-environm 
+            # https://stackoverflow.com/questions/49582349/kubernetes-how-to-refer-to-one-environment-variable-from-another
+            # 추가로 fieldPath에 metadata.namespace나 status.podIP을 넣으면 각각의
+            # namespace와 podIP가 값으로 설정된다. 단, 반드시 valueFrom - fieldRef
+            # fieldPath의 순서를 지켜야 한다.
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: http://nats-srv:4222
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: REDIS_HOST
+              value: expiration-redis-srv
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+# expiration은 service가 필요없어서 아래에 만들었어야 했는데 생략했다. 왜냐하면
+# 외부와 연결된 것이 아니라 단지 사용자가 표 선택하고 구입하기 전에 15분의 유효기간을
+# 설정하고 적용하는데 필요해서 만든 서비스이기 때문에 외부와 소통하지 않고 단지 내부
+# 다른 서버들과만 소통하기 때문이다.

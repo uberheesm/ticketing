@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  # defaultBackend:
+  #     service:
+  #       name: query-srv
+  #       port:
+  #         number: 4002
+  rules:
+    - host: ticketing.dev
+      http:
+        paths:
+          # 아래 path는 순서대로 동작한다. 사용자가 ticketing.dev에 접근하면 가장 먼저 제일 위에 위치한 path
+          # 에 접근하고 만약 그 path에 router가 없으면 그 다음 path로 접근해서 찾고 또 없으면 그 다음 path로
+          # 가는 식이다. 이 project의 예를 들자면 사용자가 ticketing.dev에 접근하면 ingress는 가장먼저 최상위
+          # payments의 /api/payments/?(.*) path에 접근하고 그 다음에 auth-srv의 /api/users/?(.*) path에 
+          # 접근하는 식이다. 따라서 아래 path의 순서는 이유가 있어서 이렇게 배치한 것이니 반드시 순서를 지켜야
+          # 한다.
+          - path: /api/payments/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+                  # host파일에서 ticketing.dev를 127.0.0.1에 추가해주고 ticketing.dev/api/users/currentuser
+                  # 로 접속하면 된다. 다만 ingress-nginx는 https연결이 default이므로 cert를 확인하게 되는데
+                  # ticketing.dev는 개인적으로 host파일에 추가해준 domain이라서 cert가 없으므로 접속이 안된다.
+                  # 그래서 security warning 메세지가 뜨는데 여기 화면에서 thisisunsafe 라고 영문으로 글자를
+                  # 타이핑 하면 접속이 된다.
+          - path: /api/users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000

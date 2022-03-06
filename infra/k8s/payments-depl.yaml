@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: gcr.io/ticketing-dev-000000/payments
+          env:
+            # 아래 fieldPath에서 metadata.name를 사용하였다. 이렇게 하면 payments-depl
+            # 의 pod name을 value로 설정하게 된다. 예를 들어서 지금 글을 적는 현재
+            # console.log(process.env.NATS_CLIENT_ID)로 value를 확인해보면 
+            # payments-depl-8684945664-8l72x 라고 나온다. (아래 stackoverflow 참조)
+            # https://stackoverflow.com/questions/52680807/how-to-assign-cluster-namespace-and-pod-name-in-kubernetes-yaml-files-environm 
+            # https://stackoverflow.com/questions/49582349/kubernetes-how-to-refer-to-one-environment-variable-from-another
+            # 추가로 fieldPath에 metadata.namespace나 status.podIP을 넣으면 각각의
+            # namespace와 podIP가 값으로 설정된다. 단, 반드시 valueFrom - fieldRef
+            # fieldPath의 순서를 지켜야 한다.
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: http://nats-srv:4222
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: MONGO_URI
+            # 아래 value에서 mongodb://다음에 오는 주소는 service의 metadata에 있는
+            # name의 값이 들어와야 한다. 그리고 port주소 27017다음에 오는것은 임의로
+            # 만들어준 database의 이름이다
+            # 이름을 대문자로 만들어 준 것은 중요하거나 비밀스럽거나 하드코딩한 정보는
+            # 대문자로 하는 것이 코딩 컨벤션이다. 아래 jwt는 실수로 소문자로 만들었는데
+            # 추후 만들때는 이런 confidential한 정보는 무조건 대문자로 만들어서 보자마자
+            # 어떤 정보인지 알 수 있도록 한다.
+              value: mongodb://payments-mongo-srv:27017/payments
+            - name: jwt
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt
+            # kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=sk_test_51KX0ptDPEbw0CdXPE6ATSbtW71woIUNGeXBOok13UySVU8L5XeajdVUGFgucX8CqTN2ERMUOXEvWTcNj5s5mlMwT00YkPo23f5
+            # 위 명령어로 아래 STRIPE_KEY secret key를 만듦. 명령어 입력해서 secret pod를 만들어서 key를
+            # 보관하는 것으로 STRIPE_KEY= 다음의 value는 stripe 홈페이지 developer 페이지에서 secret key
+            # 항목에서 복사해온 것이다. 그리고 이렇게 hardcoding으로 직접 값을 입력해주는 경우는 반드시
+            # 대문자로 적도록 한다. 강제적인 것은 아니지만 coding convention으로 다른 사람이 보는 즉시
+            # hardcoding된 값이라는 것을 알아 볼 수 있게 해준다.
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: STRIPE_KEY
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-srv
+spec:
+  selector:
+    app: payments
+  ports:
+    - name: payments
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
