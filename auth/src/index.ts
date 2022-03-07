@@ -4,7 +4,7 @@ import { app } from './app';
 
 
 const start = async () => {
-    console.log('Start auth server');
+    console.log('Startup auth server');
 
     if (!process.env.jwt) {
         throw new Error('jwt must be defined')
