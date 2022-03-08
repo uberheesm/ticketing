@@ -14,7 +14,7 @@ import { natsWrapper } from '../../nats-wrapper';
 // order의 test중에 하나가 local jest에서는 잘 되는데 git hub의 actions라는 cloud 상의
 // test에서는 계속 에러가 발생한다. 80번 포트에 연결이 안된다는 메세지가 나오는데 이 에러는
 // 원인 불명으로 인터넷 뒤져봐도 질문하는 사람은 있는데 답이 없다. 그래서 일단은 ci단계를
-// 넘어가도록 하고 이런 에러가 있었다고 기록에 남긴다.
+// 넘어가도록 하고 이런 에러가 있었다고 기록에 남긴다.gh workflow run workflow --ref
 it('returns an error if the ticket does not exist', async () => {
     const ticketId = new mongoose.Types.ObjectId();
 
