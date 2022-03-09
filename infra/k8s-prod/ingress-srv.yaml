@@ -20,7 +20,7 @@ spec:
           # 가는 식이다. 이 project의 예를 들자면 사용자가 ticketing.dev에 접근하면 ingress는 가장먼저 최상위
           # payments의 /api/payments/?(.*) path에 접근하고 그 다음에 auth-srv의 /api/users/?(.*) path에 
           # 접근하는 식이다. 따라서 아래 path의 순서는 이유가 있어서 이렇게 배치한 것이니 반드시 순서를 지켜야
-          # 한다.
+          # 한다
           - path: /api/payments/?(.*)
             pathType: Prefix
             backend:
