@@ -47,7 +47,7 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: jwt
-            # kubectl create secret generic stripe-secret --from-literal STRIPE_KEY=sk_test_51KX0ptDPEbw0CdXPE6ATSbtW71woIUNGeXBOok13UySVU8L5XeajdVUGFgucX8CqTN2ERMUOXEvWTcNj5s5mlMwT00YkPo23f5
+            # kubectl create secret generic stripe-secret --from-literal=STRIPE_KEY=sk_test_51KX0ptDPEbw0CdXPE6ATSbtW71woIUNGeXBOok13UySVU8L5XeajdVUGFgucX8CqTN2ERMUOXEvWTcNj5s5mlMwT00YkPo23f5
             # 위 명령어로 아래 STRIPE_KEY secret key를 만듦. 명령어 입력해서 secret pod를 만들어서 key를
             # 보관하는 것으로 STRIPE_KEY= 다음의 value는 stripe 홈페이지 developer 페이지에서 secret key
             # 항목에서 복사해온 것이다. 그리고 이렇게 hardcoding으로 직접 값을 입력해주는 경우는 반드시

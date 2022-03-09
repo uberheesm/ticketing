@@ -4,6 +4,7 @@ deploy:
   kubectl:
     manifests:
       - ./infra/k8s/*.yaml
+      - ./infra/k8s-dev/*.yaml
 build:
   # googleCloudBuild와 local 둘중에 하나 선택 가능. 둘다 동시에 선택 불가.
   local:
