@@ -10,15 +10,24 @@ const app = express();
 // 때문에 아래 세팅에 true로 설정하였다. 기본값은 false이다.
 app.set('trust proxy', true);
 app.use(json());
-app.use(cookieSession({
-    signed: false,
-    secure: process.env.NODE_ENV !== 'test'
-}));
+// app.use(cookieSession({
+//     signed: false,
+//     secure: process.env.NODE_ENV !== 'test'
+// }));
 // jest할때 supertest모듈을 사용하고 이 모듈은 https가 아닌 http로 통신한다. 그리고
 // secure값을 true로 하면 https 통신에만 cookie를 전송하도록 cookie-session 모듈은
 // 설정가능하다. nodejs의 환경변수는 process.env.NODE_ENV에 있는데 이것은 jest 
 // 실행중에는 값이 test로 세팅된다. 그래서 jest 실행시에는 secure값이 false가 되도록 
 // 구문을 작성하였다. (https://jestjs.io/docs/environment-variables)
+
+// 원래 cookieSession을 local에서 할때는 바로 위와 같이 해야 하지만 domain을 실제로
+// deploy하기 위해서 secure를 false로 하엿다. 왜냐하면 구입한 domain이 http이기 때문에
+// secure: false로 하지 않으면 접속이 안된다. secure: true로 하면 https 체크를 하기
+// 때문이다.
+app.use(cookieSession({
+    signed: false,
+    secure: false
+}));
 
 app.use(currentUser);
 

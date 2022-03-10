@@ -2,7 +2,12 @@ import axios from 'axios';
 
 export default ({ req }) => {
     return axios.create({
-        baseURL: 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
+        // 원래 local에서 할때는 아래 http://ingress-nginx-controller... 로 접속하였는데
+        // domain을 구입하여 실제로 deploy를 할때는 baseURL을 사람이 식별가능한 이름으로
+        // 하고 여기에 cloud의 load balancer 의 ip주소를 연결하여 이 URL에 접속하면 자동으로
+        // cloud로 연결되도록 하는 것이다. 나는 cheapname.com 이라는 곳에서 domain을 구입하였다.
+        baseURL: 'http://www.ticketing-project.xyz',
+        // baseURL: 'http://ingress-nginx-controller.ingress-nginx.svc.cluster.local',
         // req는 http request시 전달되는 정보 전부다이며 이것이 getServerSideProps로 들어오는데
         // 이 중에서 headers의 정보가 중요하다. 왜냐하면 headers내에 Host가 ticketing.dev라고
         // 적혀 있는데 ingress-nginx가 이것을 읽고 dns를 ticketing.dev/api/users/currentuser로
