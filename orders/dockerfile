@@ -11,3 +11,15 @@ CMD ["npm", "start"]
 # 모듈이 있는데 그것들을 docker 이미지에 다운로드 및 인스톨 하지 않
 # 겠다는 의미이다. 그래서 test 관련 모듈의 경우 npm install --save-dev
 # 커맨드를 사용하여 분리시켜 인스톨하여야 한다.
+
+# dockerfile 및 .dockerignore 파일을 우선 만들고 docker image를 만든
+# 다음 그것을 push 해서 docker server에 image를 올려야 한다. 
+# 명령어는 아래와 같다.
+# docker build -t uberheesm/orders .
+# docker build -t <Docker Hub 사용자 계정>/<이미지 이름>:<태그>
+# docker push uberheesm/orders
+# docker push <Docker Hub 사용자 계정>/<이미지 이름>:<태그>
+# 태그를 지정하지 않으면 latest가 됨
+# skaffold와 infra/k8s의 이미지 이름과 docker build 및 push의 
+# 이미지 이름이 정확히 일치해야 한다. 그래야 docker에서 이미지를
+# pull 해서 cloud에서 미리 입력한 명령어들로 실행이 가능하다.
