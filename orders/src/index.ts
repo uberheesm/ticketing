@@ -35,7 +35,7 @@ const start = async () => {
 
     try {
         // infra/k8s 폴더의 nats-depl 파일의 arg항목에서 cid가 ticketing으로 설정되어 있고
-        // 이것이 cluster id 이다.
+        // 이것이 cluster id 이다
         await natsWrapper.connect(
                 process.env.NATS_CLUSTER_ID, process.env.NATS_CLIENT_ID, process.env.NATS_URL
             );

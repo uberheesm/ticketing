@@ -13,7 +13,7 @@ const start = async () => {
     // yaml파일로 secret pod를 configure할 수 있고 이 것을 auth-depl.yaml파일에서
     // 지정해서 enviromental variable로 지정가능하다. 여기서 jwt가 없을 경우 사용자의
     // json web token을 검증하는 key가 없어서 server의 진행이 불가능하기 때문에 처음
-    // 구동시 check해서 아예 server 시작을 못하도록 막아버리는 것이다.
+    // 구동시 check해서 아예 server 시작을 못하도록 막아버리는 것이다
 
     if (!process.env.MONGO_URI) {
         throw new Error('MONGO_URI must be defined')

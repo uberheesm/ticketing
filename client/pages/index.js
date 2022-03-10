@@ -20,7 +20,7 @@ const IndexPage = ({ data }) => {
     let ticketList;
 
     // 아래 Link 태그에서 href는 page상의 파일이름, 즉 nextjs가 인지할 수 있도록 하는 이름을
-    // 넣어주고 실제로 이동하는 것은 as 뒤의 경로로 이동하게 된다.
+    // 넣어주고 실제로 이동하는 것은 as 뒤의 경로로 이동하게 된다
     if (data.tickets) {
         ticketList = data.tickets.map((ticket) => {
             return (
