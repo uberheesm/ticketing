@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: expiration
-          image: gcr.io/ticketing-dev-000000/expiration
+          image: uberheesm/expiration
           env:
             # 아래 fieldPath에서 metadata.name를 사용하였다. 이렇게 하면 orders-depl
             # 의 pod name을 value로 설정하게 된다. 예를 들어서 지금 글을 적는 현재

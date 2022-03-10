@@ -12,7 +12,7 @@ build:
   # googleCloudBuild:
   #   projectId: ticketing-dev-335808
   artifacts:
-    - image: gcr.io/ticketing-dev-000000/auth
+    - image: uberheesm/auth
       context: auth 
       # context는 해당 image가 있는 폴더를 지칭한다
       docker:
@@ -23,7 +23,7 @@ build:
           # src다음의 **는 모든 폴더를 지칭한다.
           # 해석해보면 src폴더내의 모든 하위폴더안에서 확장자가 ts인 모든 파일이라는 뜻이다.
             dest: .
-    - image: gcr.io/ticketing-dev-000000/client
+    - image: uberheesm/client
       context: client 
       docker:
         dockerfile: Dockerfile
@@ -31,7 +31,7 @@ build:
         manual:
           - src: "**/*.js" 
             dest: .   
-    - image: gcr.io/ticketing-dev-000000/tickets
+    - image: uberheesm/tickets
       context: tickets 
       docker:
         dockerfile: Dockerfile
@@ -39,7 +39,7 @@ build:
         manual:
           - src: "src/**/*.ts" 
             dest: .
-    - image: gcr.io/ticketing-dev-000000/orders
+    - image: uberheesm/orders
       context: orders 
       docker:
         dockerfile: Dockerfile
@@ -47,7 +47,7 @@ build:
         manual:
           - src: "src/**/*.ts" 
             dest: .
-    - image: gcr.io/ticketing-dev-000000/expiration
+    - image: uberheesm/expiration
       context: expiration 
       docker:
         dockerfile: Dockerfile
@@ -55,7 +55,7 @@ build:
         manual:
           - src: "src/**/*.ts" 
             dest: .
-    - image: gcr.io/ticketing-dev-000000/payments
+    - image: uberheesm/payments
       context: payments 
       docker:
         dockerfile: Dockerfile

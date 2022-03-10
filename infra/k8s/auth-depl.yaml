@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: gcr.io/ticketing-dev-000000/auth
+          image: uberheesm/auth
           env:
             - name: jwt
               valueFrom:

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: gcr.io/ticketing-dev-000000/client
+          image: uberheesm/client
           resources:
             limits:
               memory: 512Mi
